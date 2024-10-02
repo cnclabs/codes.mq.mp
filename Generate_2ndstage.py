@@ -13,6 +13,46 @@ openai.api_base = "https://openrouter.ai/api/v1"
 openai.api_key = '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'
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
+def generate_single_passage(query, multi_query_version="var1"):
+        response = openai.ChatCompletion.create(
+        model="meta-llama/llama-3-70b-instruct",
+        messages=[
+            {
+            "role": "user",
+            "content": f"""Please write a passage to answer the query. 
+
+Query: {query}
+
+Format your response in plain text as:
+
+Passage:"""
+            }
+        ],
+    )
+        
+        # Extract the content from the response
+        reply = response.choices[0].message['content']
+
+        # print(reply)
+
+        # Regex to capture the passage
+        pattern_p = r"Passage:\s*([\s\S]*?)$"
+
+        # Find the passage
+        passage = re.findall(pattern_p, reply, re.DOTALL)
+
+        # Check if the passage is not empty
+        if passage and passage[0].strip():
+            return {
+                "original": query,
+                "expanded": passage[0].strip()
+            }
+
+        # If the passage is empty or not found, raise an exception to trigger retry
+        print("Failed to generate a valid passage. Retrying...")
+        raise ValueError("Failed to generate a valid passage.")
+
+@retry(stop_max_attempt_number=50, wait_fixed=2000)
 def generate_single_passage(original_query, sub_query, multi_query_version="var4"):
         response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
