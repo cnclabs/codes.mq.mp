@@ -3,19 +3,17 @@ import re
 import time
 import torch
 from tqdm import tqdm
-from utils import load_multi_queries, save_multi_queries, Q2D_single_passage_generator, CoT_single_passage_generator, CQE_single_passage_generator
+from utils import load_multi_queries, save_multi_queries
+from Generator import Q2D_single_passage_generator, CoT_single_passage_generator, CQE_single_passage_generator
 from retrying import retry
 import openai
 import logging
 import argparse
 
-def process_subqueries_to_passages(dataset_name, multi_query_version):
-    # Define the method and dataset type for file paths
-    task_type = dataset_name
-    
+def process_subqueries_to_passages(task, second_stage_generation):
     # Define input file path (multiQ) and output file path (multiP)
-    queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/LC-{task_type}.json"
-    passages_file = f"/home/intern/Leon_Kuo/Paper/Generation/multiQ2multiP({multi_query_version})-{task_type}.json"
+    queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/LC-{task}.json"
+    passages_file = f"/home/intern/Leon_Kuo/Paper/Generation/multiQ2multiP({second_stage_generation})-{task}.json"
     
     # Check if the queries file exists
     if os.path.exists(queries_file):
@@ -31,7 +29,7 @@ def process_subqueries_to_passages(dataset_name, multi_query_version):
         passages_dict = {}
 
     # Generate passages only for sub-queries that haven't been processed
-    for key, data in tqdm(multi_queries_dict.items(), desc=f"Processing {dataset_name}", unit="query"):
+    for key, data in tqdm(multi_queries_dict.items(), desc=f"Processing {task}", unit="query"):
         if key not in passages_dict or not passages_dict[key].get("expanded"):
             passages_dict[key] = {
                 "original": data["original"],
@@ -39,33 +37,26 @@ def process_subqueries_to_passages(dataset_name, multi_query_version):
             }
             for sub_query in data["expanded"]:
                 # Generate a passage for each sub-query
-                passage_result = generate_single_passage(sub_query)
+                if second_stage_generation == "Q2D":
+                    passage_result = Q2D_single_passage_generator(sub_query)
+                if second_stage_generation == "CoT":
+                    passage_result = CoT_single_passage_generator(sub_query)
+                if second_stage_generation == "CQE":
+                    passage_result = CQE_single_passage_generator(sub_query)
+                
                 passages_dict[key]["expanded"].append(passage_result["expanded"])
 
             # Save the updated passages after processing each query
             save_multi_queries(passages_dict, passages_file)
 
-def main(multi_query_version):
-    
-    
+def main(second_stage_generation, task):   
     # Record the start time
     start_time = time.time()
     
     # Set the GPU device
     torch.cuda.set_device(2)
     
-    # List of datasets to process
-    datasets = [
-        'trec-covid',
-        'fiqa',
-        'dbpedia-entity',
-        'nfcorpus',
-        'webis-touche2020'
-    ]
-    
-    # Process each dataset
-    for dataset in datasets:
-        process_subqueries_to_passages(dataset, multi_query_version)
+    process_subqueries_to_passages(task, second_stage_generation)
     
     print(f"The code took {time.time() - start_time} seconds to run.")
 
@@ -75,7 +66,9 @@ if __name__ == "__main__":
                         level=logging.INFO)
     
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
-    parser.add_argument('--multi_query_version', default='var5', help='Version of multi-query to use (e.g., var4, var5)')
+    parser.add_argument('--task', default='fiqa', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
+    parser.add_argument('--second_stage_generation', default='Q2D', help='Version of multi-query to use (e.g., Q2D, CoT, CQE)')
+    
     args = parser.parse_args()
     
-    main(args.multi_query_version)
+    main(args.second_stage_generation, args.task)
