@@ -9,13 +9,12 @@ import openai
 import logging
 import argparse
 
-
 openai.api_base = "https://openrouter.ai/api/v1"
 openai.api_key = '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'
 
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def generate_multi_queries(query, firststage_generation="LC"):
+def langchain_multi_queries_generator(query):
     response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[
@@ -61,7 +60,7 @@ Sub-query 3:
     raise ValueError("Failed to generate 3 valid sub-queries.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def generate_single_passage(query, firststage_generation="CoT"):
+def CoT_single_passage_generator(query):
         response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[
@@ -107,7 +106,7 @@ Answer:"""
 
 # orgin from util.py
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def generate_single_passage(query, firststage_generation="singleP"):
+def Q2D_single_passage_generator(query):
         response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[
@@ -127,8 +126,6 @@ Passage:"""
         # Extract the content from the response
         reply = response.choices[0].message['content']
 
-        # print(reply)
-
         # Regex to capture the passage
         pattern_p = r"Passage:\s*([\s\S]*?)$"
 
@@ -146,12 +143,9 @@ Passage:"""
         print("Failed to generate a valid passage. Retrying...")
         raise ValueError("Failed to generate a valid passage.")
   
-def process_dataset(dataset_name, firststage_generation="LC"):
-    # Define the dataset for file paths
-    task_type = dataset_name
-    
+def process_dataset(task, firststage_generation):
     # Define file path for passage
-    queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/{firststage_generation}-{task_type}.json"
+    queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/{firststage_generation}-{task}.json"
     
     # Check if the queries file exists
     if os.path.exists(queries_file):
@@ -159,38 +153,29 @@ def process_dataset(dataset_name, firststage_generation="LC"):
     else:
         multi_queries_dict = {}
 
-    corpus, queries, qrels = load_data(task_type)
+    corpus, queries, qrels = load_data(task)
     
     # Generate only for queries that don't have their versions or have an error
-    for key, query in tqdm(queries.items(), desc=f"Processing {dataset_name}", unit="query"):
+    for key, query in tqdm(queries.items(), desc=f"Processing {task}", unit="query"):
         if key not in multi_queries_dict:
-            if firststage_generation == "CoT" or firststage_generation == "singleP":           
-                multi_queries_dict[key] = generate_single_passage(query)
+            if firststage_generation == "CoT":
+                multi_queries_dict[key] = CoT_single_passage_generator(query)
+            if firststage_generation == "Q2D":           
+                multi_queries_dict[key] = Q2D_single_passage_generator(query)
             if firststage_generation == "LC":           
-                multi_queries_dict[key] = generate_multi_queries(query)
+                multi_queries_dict[key] = langchain_multi_queries_generator(query)
             
             # Save the updated queries after processing each query
             save_multi_queries(multi_queries_dict, queries_file)
 
-def main(firststage_generation):
+def main(firststage_generation, task):
     # Record the start time
     start_time = time.time()
     
     # Set the GPU device
     torch.cuda.set_device(0)
     
-    # List of datasets to process
-    datasets = [
-        'trec-covid',
-        'fiqa',
-        'dbpedia-entity',
-        'nfcorpus',
-        'webis-touche2020'
-    ]
-    
-    # Process each dataset
-    for dataset in datasets:
-        process_dataset(dataset, firststage_generation)
+    process_dataset(task, firststage_generation)
     
     print(f"The code took {time.time() - start_time} seconds to run.")
 
@@ -200,7 +185,9 @@ if __name__ == "__main__":
                         level=logging.INFO)
     
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
-    parser.add_argument('--firststage_generation', default='CoT', help='CoT or LC or singleP')
+    parser.add_argument('--firststage_generation', default='CoT', help='CoT or LC or Q2D')
+    parser.add_argument('--task', default='fiqa', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
+    
     args = parser.parse_args()
     
-    main(args.firststage_generation)
+    main(args.firststage_generation, args.task)
