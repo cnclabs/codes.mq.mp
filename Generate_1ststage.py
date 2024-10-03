@@ -10,9 +10,9 @@ import openai
 import logging
 import argparse
 
-def process_dataset(task, firststage_generation):
+def process_dataset(task, first_stage_generation):
     # Define file path for passage
-    queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/{firststage_generation}-{task}.json"
+    queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/{first_stage_generation}-{task}.json"
     
     # Check if the queries file exists
     if os.path.exists(queries_file):
@@ -25,24 +25,24 @@ def process_dataset(task, firststage_generation):
     # Generate only for queries that don't have their versions or have an error
     for key, query in tqdm(queries.items(), desc=f"Processing {task}", unit="query"):
         if key not in multi_queries_dict:
-            if firststage_generation == "CoT":
+            if first_stage_generation == "CoT":
                 multi_queries_dict[key] = CoT_single_passage_generator(query)
-            if firststage_generation == "Q2D":           
+            if first_stage_generation == "Q2D":           
                 multi_queries_dict[key] = Q2D_single_passage_generator(query)
-            if firststage_generation == "LC":           
+            if first_stage_generation == "LC":           
                 multi_queries_dict[key] = langchain_multi_queries_generator(query)
             
             # Save the updated queries after processing each query
             save_multi_queries(multi_queries_dict, queries_file)
 
-def main(firststage_generation, task):
+def main(first_stage_generation, task):
     # Record the start time
     start_time = time.time()
     
     # Set the GPU device
     torch.cuda.set_device(0)
     
-    process_dataset(task, firststage_generation)
+    process_dataset(task, first_stage_generation)
     
     print(f"The code took {time.time() - start_time} seconds to run.")
 
@@ -52,9 +52,9 @@ if __name__ == "__main__":
                         level=logging.INFO)
     
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
-    parser.add_argument('--firststage_generation', default='CoT', help='CoT or LC or Q2D')
+    parser.add_argument('--first_stage_generation', default='CoT', help='CoT or LC or Q2D')
     parser.add_argument('--task', default='fiqa', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     
     args = parser.parse_args()
     
-    main(args.firststage_generation, args.task)
+    main(args.first_stage_generation, args.task)
