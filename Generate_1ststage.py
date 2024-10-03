@@ -61,7 +61,7 @@ Sub-query 3:
     raise ValueError("Failed to generate 3 valid sub-queries.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def generate_single_passage(query):
+def generate_single_passage(query, firststage_generation="CoT"):
         response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[
@@ -105,7 +105,48 @@ Answer:"""
         print("Failed to generate a valid passage. Retrying...")
         raise ValueError("Failed to generate a valid passage.")
 
-def process_dataset(dataset_name, firststage_generation):
+# orgin from util.py
+@retry(stop_max_attempt_number=50, wait_fixed=2000)
+def generate_single_passage(query, firststage_generation="singleP"):
+        response = openai.ChatCompletion.create(
+        model="meta-llama/llama-3-70b-instruct",
+        messages=[
+            {
+            "role": "user",
+            "content": f"""Please write a passage to answer the query. 
+
+Query: {query}
+
+Format your response in plain text as:
+
+Passage:"""
+            }
+        ],
+    )
+        
+        # Extract the content from the response
+        reply = response.choices[0].message['content']
+
+        # print(reply)
+
+        # Regex to capture the passage
+        pattern_p = r"Passage:\s*([\s\S]*?)$"
+
+        # Find the passage
+        passage = re.findall(pattern_p, reply, re.DOTALL)
+
+        # Check if the passage is not empty
+        if passage and passage[0].strip():
+            return {
+                "original": query,
+                "expanded": passage[0].strip()
+            }
+
+        # If the passage is empty or not found, raise an exception to trigger retry
+        print("Failed to generate a valid passage. Retrying...")
+        raise ValueError("Failed to generate a valid passage.")
+  
+def process_dataset(dataset_name, firststage_generation="LC"):
     # Define the dataset for file paths
     task_type = dataset_name
     
@@ -123,7 +164,7 @@ def process_dataset(dataset_name, firststage_generation):
     # Generate only for queries that don't have their versions or have an error
     for key, query in tqdm(queries.items(), desc=f"Processing {dataset_name}", unit="query"):
         if key not in multi_queries_dict:
-            if firststage_generation == "CoT":           
+            if firststage_generation == "CoT" or firststage_generation == "singleP":           
                 multi_queries_dict[key] = generate_single_passage(query)
             if firststage_generation == "LC":           
                 multi_queries_dict[key] = generate_multi_queries(query)
@@ -159,7 +200,7 @@ if __name__ == "__main__":
                         level=logging.INFO)
     
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
-    parser.add_argument('--firststage_generation', default='CoT', help='CoT or LC')
+    parser.add_argument('--firststage_generation', default='CoT', help='CoT or LC or singleP')
     args = parser.parse_args()
     
     main(args.firststage_generation)
