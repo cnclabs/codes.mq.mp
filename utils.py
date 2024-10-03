@@ -424,7 +424,7 @@ def retrieve_single_query(corpus, json_file, include_original=True, base_model =
 
     return combined_results, retriever
 
-def retrieve_and_combine(corpus, json_file, fusion_method='RRF', include_original=True, concat_original=False):
+def retrieve_and_combine(corpus, json_file, fusion_method='RRF', include_original=True, concat_original=False, base_model = 'e5-small-v2'):
     data = load_multi_queries(json_file)
     
     # Build expanded queries with or without the original query
@@ -456,14 +456,13 @@ def retrieve_and_combine(corpus, json_file, fusion_method='RRF', include_origina
 
     ############
     # Initialize the retriever here
-    model = DRES(models.SentenceBERT("intfloat/e5-small-v2"), batch_size=64)
-    retriever = EvaluateRetrieval(model, score_function="cos_sim")
+    if base_model == 'e5-small-v2':
+        model = DRES(models.SentenceBERT("intfloat/e5-small-v2"), batch_size=64)
+        retriever = EvaluateRetrieval(model, score_function="cos_sim")
     
-    """
-    # Initialize the retriever here
-    model = DRES(models.SentenceBERT("facebook/contriever"), batch_size=64)
-    retriever = EvaluateRetrieval(model, score_function="dot")
-    """
+    if base_model == 'contriever':
+        model = DRES(models.SentenceBERT("facebook/contriever"), batch_size=64)
+        retriever = EvaluateRetrieval(model, score_function="dot")
     ############
 
 
