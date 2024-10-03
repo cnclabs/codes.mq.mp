@@ -130,47 +130,6 @@ Passage 3:"""
     print("Failed to generate 3 valid sub-queries. Retrying...")
     raise ValueError("Failed to generate 3 valid sub-queries.")
 
-# Wrote in Generate_2ndstage.py as var1
-@retry(stop_max_attempt_number=50, wait_fixed=2000)
-def generate_single_passage(query):
-        response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
-        messages=[
-            {
-            "role": "user",
-            "content": f"""Please write a passage to answer the query. 
-
-Query: {query}
-
-Format your response in plain text as:
-
-Passage:"""
-            }
-        ],
-    )
-        
-        # Extract the content from the response
-        reply = response.choices[0].message['content']
-
-        # print(reply)
-
-        # Regex to capture the passage
-        pattern_p = r"Passage:\s*([\s\S]*?)$"
-
-        # Find the passage
-        passage = re.findall(pattern_p, reply, re.DOTALL)
-
-        # Check if the passage is not empty
-        if passage and passage[0].strip():
-            return {
-                "original": query,
-                "expanded": passage[0].strip()
-            }
-
-        # If the passage is empty or not found, raise an exception to trigger retry
-        print("Failed to generate a valid passage. Retrying...")
-        raise ValueError("Failed to generate a valid passage.")
-
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
 def generate_queries_and_passages(query):
     response = openai.ChatCompletion.create(
