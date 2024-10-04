@@ -185,6 +185,105 @@ def retrieve_and_combine(corpus, json_file, fusion_method='RRF', include_origina
 
     return combined_results, retriever
 
+# Helper function to initialize the retriever
+def initialize_retriever(base_model: str) -> EvaluateRetrieval:
+    if base_model == 'e5-small-v2':
+        model = DRES(models.SentenceBERT("intfloat/e5-small-v2"), batch_size=64)
+        return EvaluateRetrieval(model, score_function="cos_sim")
+    elif base_model == 'contriever':
+        model = DRES(models.SentenceBERT("facebook/contriever"), batch_size=64)
+        return EvaluateRetrieval(model, score_function="dot")
+    else:
+        raise ValueError(f"Unsupported base model: {base_model}")
+
+# Function to prepare queries for retrieval
+def prepare_queries(data: dict, include_original: bool, concat_original: bool = False) -> dict:
+    expanded_queries = {}
+
+    for query_id, value in data.items():
+        original_query = value['original']
+        expanded_list = value['expanded'] if isinstance(value['expanded'], list) else [value['expanded']]
+        
+        if include_original and concat_original:
+            expanded_queries[query_id] = [original_query] + [f"{original_query} [SEP] {expanded}" for expanded in expanded_list]
+        elif include_original:
+            expanded_queries[query_id] = [original_query] + expanded_list
+        elif concat_original:
+            expanded_queries[query_id] = [f"{original_query} [SEP] {expanded}" for expanded in expanded_list]
+        else:
+            expanded_queries[query_id] = expanded_list
+
+    return expanded_queries
+
+# Single query retrieval function
+def retrieve_single_query(corpus: str, json_file: str, include_original: bool = True, base_model: str = 'e5-small-v2') -> tuple:
+    data = load_multi_queries(json_file)
+    
+    all_queries = {}
+
+    for query_id, value in data.items():
+        original_query = value['original']
+        expanded_queries = value['expanded'] if isinstance(value['expanded'], list) else [value['expanded']]
+        
+        # Concatenate queries based on conditions
+        text_for_retrieval = " [SEP] ".join([original_query] + expanded_queries) if include_original else " [SEP] ".join(expanded_queries)
+        
+        # Prepare a unique identifier for each query
+        query_key = f"{query_id}_single"
+        all_queries[query_key] = {"text": text_for_retrieval}
+
+    # Initialize retriever
+    retriever = initialize_retriever(base_model)
+
+    # Retrieve results
+    all_results = retriever.retrieve(corpus, all_queries)
+
+    # Extract and organize results
+    combined_results = {query_id: all_results[f"{query_id}_single"] for query_id in data.keys()}
+
+    return combined_results, retriever
+
+# Multiple query retrieval and fusion function
+def retrieve_and_combine(corpus: str, json_file: str, fusion_method: str = 'RRF', include_original: bool = True, concat_original: bool = False, base_model: str = 'e5-small-v2') -> tuple:
+    data = load_multi_queries(json_file)
+
+    # Prepare queries
+    expanded_queries = prepare_queries(data, include_original, concat_original)
+
+    all_queries = {f"{query_id}_v{idx}": {"text": query} 
+                   for query_id, queries in expanded_queries.items() 
+                   for idx, query in enumerate(queries)}
+
+    # Initialize retriever
+    retriever = initialize_retriever(base_model)
+
+    # Retrieve results for all queries
+    all_results = retriever.retrieve(corpus, all_queries)
+
+    # Apply the selected fusion method to combine results
+    combined_results = {}
+    for query_id, queries in expanded_queries.items():
+        search_results = {f"{query_id}_v{idx}": all_results.get(f"{query_id}_v{idx}") 
+                          for idx in range(len(queries))}
+
+        if fusion_method == 'RRF':
+            combined_results[query_id] = reciprocal_rank_fusion(search_results)
+        elif fusion_method == 'CombSUM':
+            combined_results[query_id] = CombSUM(search_results)
+        else:
+            raise ValueError(f"Unsupported fusion method: {fusion_method}")
+
+    return combined_results, retriever
+
+# General retrieval function (for use when no query modification is needed)
+def retrieve(corpus: str, json_file: str, base_model: str) -> tuple:
+    # Initialize retriever
+    retriever = initialize_retriever(base_model)
+
+    # Retrieve results
+    retrieval_result = retriever.retrieve(corpus, json_file)
+    
+    return retrieval_result, retriever
 
 """Evaluate"""
 def evaluate(results, retriever, qrels, output_file):

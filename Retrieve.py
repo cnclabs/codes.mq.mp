@@ -2,7 +2,7 @@ import os
 import time
 import torch
 import logging
-from utils import load_data, evaluate, retrieve_and_combine, retrieve_single_query
+from utils import load_data, evaluate, retrieve_and_combine, retrieve_single_query, retrieve
 from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.retrieval import models
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
@@ -48,15 +48,7 @@ def main(method, retrieval_type, fusion_method, include_original, concat_origina
     elif retrieval_type == 'single':
         retrieval_result, retriever = retrieve_single_query(corpus, queries_file, concat_original, base_model)
     elif retrieval_type == 'rawQ':
-        model = DRES(models.SentenceBERT("facebook/contriever"), batch_size=64)
-        retriever = EvaluateRetrieval(model, score_function="dot")
-        """
-        # Initialize the retriever here
-        model = DRES(models.SentenceBERT("intfloat/e5-small-v2"), batch_size=64)
-        retriever = EvaluateRetrieval(model, score_function="cos_sim")
-        """
-        retrieval_result = retriever.retrieve(corpus, queries)
-
+        retrieval_result, retriever = retrieve(corpus, queries_file, base_model)
     # Evaluate the results
     evaluate(retrieval_result, retriever, qrels, result_file)
     logging.info(f"Completed processing of {task}. Results saved to {result_file}")
