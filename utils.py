@@ -1,20 +1,15 @@
 import re
 import os
 import json
-import openai
 import logging
 import numpy as np
 from beir import util
 from beir.datasets.data_loader import GenericDataLoader
-from retrying import retry
 from transformers import logging as hf_logging
 from beir.datasets.data_loader import GenericDataLoader
 from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.retrieval import models
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
-
-openai.api_base = "https://openrouter.ai/api/v1"
-openai.api_key = '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'
 
 # Set the Transformers log level to error to suppress warnings
 hf_logging.set_verbosity_error()
@@ -40,7 +35,6 @@ def load_data(task):
 def save_multi_queries(multi_queries, filename):
     with open(filename, 'w') as f:
         json.dump(multi_queries, f, indent=4)
-
 
 """Fuse"""
 def reciprocal_rank_fusion(search_results_dict, k=60):
