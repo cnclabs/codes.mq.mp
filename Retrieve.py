@@ -8,7 +8,7 @@ from beir.retrieval import models
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
 import argparse
 
-def main(method, retrieval_type, fusion_method, include_original, concat_original, base_model, task):
+def main(method, retrieval_type, fusion_method, include_original, concat_original, base_model, task, queries_file, result_file):
     # Check for CUDA availability and set device
     if torch.cuda.is_available():
         torch.cuda.set_device(0)
@@ -19,17 +19,6 @@ def main(method, retrieval_type, fusion_method, include_original, concat_origina
     logging.basicConfig(format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S',
                         level=logging.INFO)
-
-    # Define result file and queries file based on retrieval type and flags
-    if retrieval_type != 'rawQ':
-        queries_file = f"/home/intern/Leon_Kuo/Paper/Generation/{method}-{task}.json" if retrieval_type != 'rawQ' else None
-
-    result_file = f"/home/intern/Yu/Paper/Result/result-{method}-{task}-" \
-                  f"{fusion_method if retrieval_type == 'multiple' else 'single'}" \
-                  f"{'(include)' if include_original else ''}" \
-                  f"{'(concat)' if concat_original else ''}.json" if retrieval_type != 'rawQ' else \
-                  f"/home/intern/Leon_Kuo/Paper/Evaluation_Results/result-rawQ-{task}.json"
-    #X single
 
     # Check if result file exists and is non-empty
     if os.path.exists(result_file) and os.path.getsize(result_file) > 0:
@@ -73,7 +62,11 @@ if __name__ == "__main__":
     parser.add_argument('--base_model', default='e5-small-v2', help='e5-small-v2, contriever, or other base models')
     parser.add_argument('--task', default='fiqa', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     
+    # New arguments for file paths
+    parser.add_argument('--queries_file', default=None, help='Path to the queries file')
+    parser.add_argument('--result_file', default=None, help='Path to the result file')
+
     args = parser.parse_args()
 
     # Call main function with parsed arguments
-    main(args.method, args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task)
+    main(args.method, args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task, args.queries_file, args.result_file)
