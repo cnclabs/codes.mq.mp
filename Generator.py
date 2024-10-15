@@ -129,7 +129,7 @@ def CQE_single_passage_generator(original_query, sub_query):
         raise ValueError("Failed to generate a valid passage.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def langchain_multi_queries_generator(query):
+def MQR_multi_queries_generator(query):
     response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[
@@ -175,7 +175,7 @@ def langchain_multi_queries_generator(query):
     raise ValueError("Failed to generate 3 valid sub-queries.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def MILL_multiQ_multiP_generator(query):
+def QQD_multi_passage_generator(query):
     response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[
@@ -232,7 +232,7 @@ Passage 3:"""
     raise ValueError("Failed to generate 3 valid sub-queries and 3 passages.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def MCQE_multiQ_multiP_generator(query):
+def MCQE_multi_passage_generator(query):
     response = openai.ChatCompletion.create(
         model="meta-llama/llama-3-70b-instruct",
         messages=[

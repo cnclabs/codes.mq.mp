@@ -8,7 +8,7 @@ from beir.retrieval import models
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
 import argparse
 
-def main(method, retrieval_type, fusion_method, include_original, concat_original, base_model, task, queries_file, result_file):
+def main(retrieval_type, fusion_method, include_original, concat_original, base_model, task, queries_file, result_file):
     # Check for CUDA availability and set device
     if torch.cuda.is_available():
         torch.cuda.set_device(0)
@@ -54,13 +54,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
     
     # Define arguments for both methods
-    parser.add_argument('--method', default=None, help='multiCQE(mP), multiQ2multiP(var4), QQD(MILL)(mP), or singleP')
+    #parser.add_argument('--method', default=None, help='multiCQE(mP), multiQ2multiP(var4), QQD(MILL)(mP), or singleP')
     parser.add_argument('--retrieval_type', help='single, multiple, rawQ')
     parser.add_argument('--fusion_method', default=None, help='RRF, fusion method, or None for single query retrieval')
     parser.add_argument('--include_original', action='store_false', help='Include original queries in the retrieval process')
     parser.add_argument('--concat_original', action='store_false', help='Concatenate original queries with expanded queries')
     parser.add_argument('--base_model', default='e5-small-v2', help='e5-small-v2, contriever, or other base models')
-    parser.add_argument('--task', default='fiqa', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
+    parser.add_argument('--task', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     
     # New arguments for file paths
     parser.add_argument('--queries_file', default=None, help='Path to the queries file')
@@ -69,4 +69,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Call main function with parsed arguments
-    main(args.method, args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task, args.queries_file, args.result_file)
+    #main(args.method, args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task, args.queries_file, args.result_file)
+    main(args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task, args.queries_file, args.result_file)
