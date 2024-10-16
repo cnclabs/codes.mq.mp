@@ -1,8 +1,6 @@
 # MMLF
 The code implementation of paper MMLF: Multi-query Multi-passage Late Fusion Retrieval
 
----
-
 ## Step to run the code
 ### 1. Setup the env
 
@@ -16,7 +14,6 @@ The code implementation of paper MMLF: Multi-query Multi-passage Late Fusion Ret
 
 ### 3. Set the `OPENAI_KEY` in both `config.py`
 
----
 
 ## Script
 
@@ -43,7 +40,6 @@ python Generate.py --generation_stage={} --generation_type={} --task={} --querie
   
 - **`passages_file`**: The path to the passages file (optional).
 
----
 
 ### 2. `Retrieve.py`
 This script retrieves passages using queries processed through the MMLF method. It supports single or multiple query retrieval with optional query expansion and result fusion.
@@ -73,7 +69,6 @@ python Retrieve.py --retrieval_type={} --fusion_method={} --include_original --c
   
 - **`result_file`**: The path to the file where the results will be saved.
 
----
 
 ### Example
 
@@ -84,7 +79,6 @@ python Generate.py --generation_stage second --generation_type CQE --task "$task
 python Retrieve.py --retrieval_type multiple  --fusion_method RRF --include_original --base_model "$base_model" --task "$task_type" --queries_file "your_paggages_file" --result_file "your_result_file"
 ```
 
----
 
 ## License
 This project is licensed under the xxx License.
