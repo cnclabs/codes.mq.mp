@@ -47,8 +47,6 @@ python Generate.py --generation_stage={} --generation_type={} --task={} --querie
   
 - **`passages_file`**: The path to the passages file (optional).
 
----
-
 ### 5. Run the `Retrieve.py` Script
 
 This script retrieves passages using queries processed through the MMLF method. It supports single or multiple query retrieval with optional query expansion and result fusion.
