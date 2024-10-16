@@ -1,7 +1,7 @@
 
 # MMLF: Multi-query Multi-passage Late Fusion Retrieval
 
-The code implementation of the paper **MMLF: Multi-query Multi-passage Late Fusion Retrieval**.
+The code implementation of the paper **MMLF: Multi-query Multi-passage Late Fusion Retrieval**.  
 MMLF (Multi-query Multi-passage Late Fusion) is a straightforward yet potent pipeline that generates sub-queries, expands them into pseudo-documents, retrieves them individually, and aggregates results using reciprocal rank fusion. Our experiments demonstrate that MMLF exhibits superior performance across five BEIR benchmark datasets, recording up to an 8% improvement in both Recall@1k and nDCG@10 compared to the state-of-the-art across BEIR information retrieval datasets.
 
 ## Steps to Run the Code
