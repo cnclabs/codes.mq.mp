@@ -25,7 +25,7 @@ You can download the pre-generated subqueries and queries from [Hugging Face](ht
 
 ## Run Script
 
-### 1. Run the `Generate.py` Script
+### 1. `Generate.py`
 
 This script generates queries and passages using different stages and generation types.
 
@@ -51,7 +51,7 @@ python Generate.py --generation_stage={} --generation_type={} --task={} --querie
   
 - **`passages_file`**: The path to the passages file (optional).
 
-### 2. Run the `Retrieve.py` Script
+### 2. `Retrieve.py`
 
 This script retrieves passages using queries processed through the MMLF method. It supports single or multiple query retrieval with optional query expansion and result fusion.
 
@@ -84,7 +84,7 @@ python Retrieve.py --retrieval_type={} --fusion_method={} --include_original --c
 
 ### Example
 
-To use the MMLF pipeline:
+To implement the MMLF pipeline:
 
 ```bash
 # Generate queries with the first generation stage
