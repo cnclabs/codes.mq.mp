@@ -54,11 +54,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
     
     # Define arguments for both methods
-    #parser.add_argument('--method', default=None, help='multiCQE(mP), multiQ2multiP(var4), QQD(MILL)(mP), or singleP')
     parser.add_argument('--retrieval_type', help='single, multiple, rawQ')
     parser.add_argument('--fusion_method', default=None, help='RRF, fusion method, or None for single query retrieval')
-    parser.add_argument('--include_original', action='store_false', help='Include original queries in the retrieval process')
-    parser.add_argument('--concat_original', action='store_false', help='Concatenate original queries with expanded queries')
+    parser.add_argument('--include_original', action='store_true', help='Include original queries in the retrieval process')
+    parser.add_argument('--concat_original', action='store_true', help='Concatenate original queries with expanded queries')
     parser.add_argument('--base_model', default='e5-small-v2', help='e5-small-v2, contriever, or other base models')
     parser.add_argument('--task', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     
@@ -69,5 +68,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Call main function with parsed arguments
-    #main(args.method, args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task, args.queries_file, args.result_file)
     main(args.retrieval_type, args.fusion_method, args.include_original, args.concat_original, args.base_model, args.task, args.queries_file, args.result_file)
