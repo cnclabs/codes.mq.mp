@@ -1,5 +1,7 @@
-# MMLF
+# MMLF: Multi-query Multi-passage Late Fusion Retrieval
+
 The code implementation of paper MMLF: Multi-query Multi-passage Late Fusion Retrieval
+\underline{M}ulti-query \underline{M}ulti-passage \underline{L}ate \underline{F}usion (MMLF), a straightforward yet potent pipeline that generates sub-queries, expands them into pseudo-documents, retrieves them individually, and aggregates results using reciprocal rank fusion. Our experiments demonstrate that MMLF exhibits superior performance across five BEIR benchmark datasets, recording up to an 8\% improvement in both Recall@1k and nDCG@10 compared to the state of the art across BEIR information retrieval datasets.
 
 ## Step to run the code
 ### 1. Setup the env
@@ -14,10 +16,7 @@ The code implementation of paper MMLF: Multi-query Multi-passage Late Fusion Ret
 
 ### 3. Set the `OPENAI_KEY` in both `config.py`
 
-
-## Script
-
-### 1. `Generate.py`
+### 4. `Generate.py`
 
 ```bash
 python Generate.py --generation_stage={} --generation_type={} --task={} --queries_file={} --passages_file={}
@@ -41,7 +40,7 @@ python Generate.py --generation_stage={} --generation_type={} --task={} --querie
 - **`passages_file`**: The path to the passages file (optional).
 
 
-### 2. `Retrieve.py`
+### 5. `Retrieve.py`
 This script retrieves passages using queries processed through the MMLF method. It supports single or multiple query retrieval with optional query expansion and result fusion.
 
 ```bash
