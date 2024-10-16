@@ -92,9 +92,3 @@ python Generate.py --generation_stage second --generation_type CQE --task "$task
 # Retrieve results using multiple queries and fusion method
 python Retrieve.py --retrieval_type multiple  --fusion_method RRF --include_original --base_model "$base_model" --task "$task_type" --queries_file "your_passages_file" --result_file "your_result_file"
 ```
-
----
-
-## License
-
-This project is licensed under the xxx License.
