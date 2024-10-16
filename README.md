@@ -1,10 +1,12 @@
+
 # MMLF: Multi-query Multi-passage Late Fusion Retrieval
 
-The code implementation of paper MMLF: Multi-query Multi-passage Late Fusion Retrieval
-\underline{M}ulti-query \underline{M}ulti-passage \underline{L}ate \underline{F}usion (MMLF), a straightforward yet potent pipeline that generates sub-queries, expands them into pseudo-documents, retrieves them individually, and aggregates results using reciprocal rank fusion. Our experiments demonstrate that MMLF exhibits superior performance across five BEIR benchmark datasets, recording up to an 8\% improvement in both Recall@1k and nDCG@10 compared to the state of the art across BEIR information retrieval datasets.
+The code implementation of the paper **MMLF: Multi-query Multi-passage Late Fusion Retrieval**.
+MMLF (Multi-query Multi-passage Late Fusion) is a straightforward yet potent pipeline that generates sub-queries, expands them into pseudo-documents, retrieves them individually, and aggregates results using reciprocal rank fusion. Our experiments demonstrate that MMLF exhibits superior performance across five BEIR benchmark datasets, recording up to an 8% improvement in both Recall@1k and nDCG@10 compared to the state-of-the-art across BEIR information retrieval datasets.
 
-## Step to run the code
-### 1. Setup the env
+## Steps to Run the Code
+
+### 1. Setup the Environment
 
 - Python 3.x
 - Required packages can be installed using:
@@ -12,15 +14,20 @@ The code implementation of paper MMLF: Multi-query Multi-passage Late Fusion Ret
   pip install -r requirements.txt
   ```
 
-### 2. Download the pregenerated subqueries and queries from [huggingface](https://huggingface.co/datasets/yvonne90190/MMLF_Generated_Results/tree/main)
+### 2. Download the Pre-generated Subqueries and Queries
 
-### 3. Set the `OPENAI_KEY` in both `config.py`
+You can download the pre-generated subqueries and queries from [Hugging Face](https://huggingface.co/datasets/yvonne90190/MMLF_Generated_Results/tree/main).
 
-### 4. `Generate.py`
+### 3. Set the `OPENAI_KEY` in both `config.py` files.
+
+### 4. Run the `Generate.py` Script
+
+This script generates queries and passages using different stages and generation types.
 
 ```bash
 python Generate.py --generation_stage={} --generation_type={} --task={} --queries_file={} --passages_file={}
 ```
+
 - **`generation_stage`**: The generation stage you want to use. Candidate values:
   - `first`: First stage of query generation.
   - `second`: Second stage of query generation.
@@ -39,8 +46,10 @@ python Generate.py --generation_stage={} --generation_type={} --task={} --querie
   
 - **`passages_file`**: The path to the passages file (optional).
 
+---
 
-### 5. `Retrieve.py`
+### 5. Run the `Retrieve.py` Script
+
 This script retrieves passages using queries processed through the MMLF method. It supports single or multiple query retrieval with optional query expansion and result fusion.
 
 ```bash
@@ -68,17 +77,25 @@ python Retrieve.py --retrieval_type={} --fusion_method={} --include_original --c
   
 - **`result_file`**: The path to the file where the results will be saved.
 
+---
 
 ### Example
 
-For `MMLF`:
+To use the MMLF pipeline:
+
 ```bash
+# Generate queries with the first generation stage
 python Generate.py --generation_stage first --generation_type MQR --task "$task_type" --queries_file "your_queries_file"
-python Generate.py --generation_stage second --generation_type CQE --task "$task_type" --queries_file "$task_type" --queries_file "your_queries_file" --passages_file "your_paggages_file"
-python Retrieve.py --retrieval_type multiple  --fusion_method RRF --include_original --base_model "$base_model" --task "$task_type" --queries_file "your_paggages_file" --result_file "your_result_file"
+
+# Generate queries with the second stage
+python Generate.py --generation_stage second --generation_type CQE --task "$task_type" --queries_file "your_queries_file" --passages_file "your_passages_file"
+
+# Retrieve results using multiple queries and fusion method
+python Retrieve.py --retrieval_type multiple  --fusion_method RRF --include_original --base_model "$base_model" --task "$task_type" --queries_file "your_passages_file" --result_file "your_result_file"
 ```
 
+---
 
 ## License
-This project is licensed under the xxx License.
 
+This project is licensed under the xxx License.
