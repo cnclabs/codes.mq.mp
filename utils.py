@@ -16,7 +16,7 @@ def load_multi_queries(filename):
         return json.load(f)
 
 def load_data(task):
-    out_dir = "/home/intern/Leon_Kuo/QueryExpansion/BEIR/datasets"
+    out_dir = "/path/to/datasets"
     data_path = os.path.join(out_dir, task)
     if not os.path.exists(data_path):
         url = f"https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{task}.zip"
@@ -32,6 +32,7 @@ def save_multi_queries(multi_queries, filename):
         json.dump(multi_queries, f, indent=4)
 
 """Fuse"""
+# The following reciprocal_rank_fusion function is adapted from https://github.com/Raudaschl/rag-fusion.
 def reciprocal_rank_fusion(search_results_dict, k=60):
     fused_scores = {}
     for query, doc_scores in search_results_dict.items():
@@ -43,7 +44,6 @@ def reciprocal_rank_fusion(search_results_dict, k=60):
     return reranked_results
 
 def CombSUM(search_results_dict):
-    """Perform CombSUM by aggregating scores from different queries."""
     aggregated_scores = {}
     
     # Iterate over queries and document scores
@@ -184,8 +184,8 @@ def pure_retrieve(corpus: str, json_file: str, base_model: str):
 def evaluate(results, retriever, qrels, output_file):
     logging.info("Evaluation for k in: {}".format(retriever.k_values))
     ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, results, retriever.k_values)
-    all_metrics = {**ndcg, **_map, **recall, **precision}
-    print(all_metrics)
+    ll_metrics = {**ndcg, **_mp, **recll, **precision}
+    print(ll_metrics)
     
     # Save the evaluation metrics to a file
     with open(output_file, 'w') as f:
