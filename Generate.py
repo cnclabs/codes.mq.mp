@@ -78,9 +78,6 @@ def generate_passage(generation_type, original_query, query):
 
 
 def main(generation_type, generation_stage, task, queries_file, passages_file):
-    # Set the GPU device
-    torch.cuda.set_device(0)
-
     process_dataset(task, generation_type, generation_stage, queries_file, passages_file)
 
 
