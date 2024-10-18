@@ -214,8 +214,8 @@ def pure_retrieve(corpus: str, json_file: str, base_model: str):
 def evaluate(results, retriever, qrels, output_file):
     logging.info("Evaluation for k in: {}".format(retriever.k_values))
     ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, results, retriever.k_values)
-    ll_metrics = {**ndcg, **_mp, **recll, **precision}
-    print(ll_metrics)
+    all_metrics = {**ndcg, **_map, **recall, **precision}
+    print(all_metrics)
     
     # Save the evaluation metrics to a file
     with open(output_file, 'w') as f:
