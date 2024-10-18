@@ -1,15 +1,14 @@
-
 # MMLF: Multi-query Multi-passage Late Fusion Retrieval
 
-The code implementation of the paper **MMLF: Multi-query Multi-passage Late Fusion Retrieval**.  
-  
+The code implementation of the paper **MMLF: Multi-query Multi-passage Late Fusion Retrieval**.
+
 MMLF (Multi-query Multi-passage Late Fusion) is a straightforward yet potent pipeline that generates sub-queries, expands them into pseudo-documents, retrieves them individually, and aggregates results using reciprocal rank fusion. Our experiments demonstrate that MMLF exhibits superior performance across five BEIR benchmark datasets, recording up to an 8% improvement in both Recall@1k and nDCG@10 compared to the state-of-the-art across BEIR information retrieval datasets.
 
 ## Setup the Environment
 
 ### 1. Dependencies
 
-- Python 3.x
+- Python 3.11.8
 - Required packages can be installed using:
   ```bash
   pip install -r requirements.txt
@@ -34,21 +33,19 @@ python Generate.py --generation_stage={} --generation_type={} --task={} --querie
 ```
 
 - **`generation_stage`**: The generation stage you want to use. Candidate values:
+
   - `first`: First stage of query generation.
   - `second`: Second stage of query generation.
   - `combined`: Combines both stages.
-  
 - **`generation_type`**: The query generation method name. Candidate values:
+
   - `CoT`: Chain of Thought generation.
   - `Q2D`: Query to Document.
   - `MQR`: Multi Query Refinement.
   - `MCQE`: Multi Candidate Query Expansion.
   - `QQD`: Query-Query Document generation.
-  
 - **`task`**: The dataset you want to use. Candidate values: `trec-covid`, `fiqa`, `dbpedia-entity`, `nfcorpus`, `webis-touche2020`.
-  
 - **`queries_file`**: The path to the queries file (optional).
-  
 - **`passages_file`**: The path to the passages file (optional).
 
 ### 2. `Retrieve.py`
@@ -60,24 +57,19 @@ python Retrieve.py --retrieval_type={} --fusion_method={} --include_original --c
 ```
 
 - **`retrieval_type`**: The retrieval type you want to use. Candidate values:
+
   - `single`: Uses a single query for retrieval.
   - `multiple`: Uses multiple expanded queries.
   - `rawQ`: Uses raw queries without expansion.
-  
 - **`fusion_method`**: The fusion method used to combine results from multiple queries. Candidate values:
+
   - `RRF`: Reciprocal Rank Fusion.
   - `None`: For single query retrieval.
-  
 - **`include_original`**: A flag that, if set, includes the original queries in the retrieval process.
-  
 - **`concat_original`**: A flag that, if set, concatenates original queries with expanded queries.
-  
 - **`base_model`**: The base model to use for query encoding. Candidate values: `e5-small-v2`, `contriever`, or other models.
-  
 - **`task`**: The dataset you want to use. Candidate values: `trec-covid`, `fiqa`, `dbpedia-entity`, `nfcorpus`, `webis-touche2020`.
-  
 - **`queries_file`**: The path to the queries file.
-  
 - **`result_file`**: The path to the file where the results will be saved.
 
 ---
