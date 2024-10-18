@@ -1,3 +1,12 @@
+"""
+File: Generator.py
+
+Description: This module contains functions for generating passages and sub-queries 
+             using OpenAI's API based on the provided user queries. The functions use 
+             retry logic to handle potential errors during API calls, ensuring robust 
+             execution even in the face of transient failures.
+"""
+
 from retrying import retry
 import openai
 import re

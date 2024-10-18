@@ -1,3 +1,33 @@
+"""
+File: retrieval_fusion.py
+
+Description:
+    This script is designed for query expansion, retrieval, and result fusion using
+    dense retrieval models like e5-small-v2 and Contriever. The script supports
+    retrieval of single or multiple queries with optional fusion techniques such
+    as Reciprocal Rank Fusion (RRF) and CombSUM. Additionally, it includes
+    evaluation of retrieval performance using standard metrics such as NDCG and MAP.
+
+Usage:
+    1. Load queries from a JSON file and retrieve results using the specified retrieval model.
+    2. Optionally fuse multiple expanded queries using RRF or CombSUM.
+    3. Evaluate the retrieval results using BEIR's evaluation metrics.
+
+Dependencies:
+    - BEIR framework: https://github.com/beir-cellar/beir
+    - Hugging Face Transformers: https://github.com/huggingface/transformers
+    - Numpy, OS, JSON, Logging
+
+Acknowledgments:
+    - Specific functions like data loading, retrieval, and evaluation are based on BEIR implementations.
+      BEIR: https://github.com/beir-cellar/beir
+    - Reciprocal Rank Fusion is adapted from https://github.com/Raudaschl/rag-fusion.
+
+License:
+    MIT License. See LICENSE file for details.
+
+"""
+
 import re
 import os
 import json

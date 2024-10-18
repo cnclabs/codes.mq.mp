@@ -1,3 +1,38 @@
+"""
+File: Generate.py
+
+Description:
+    This script processes datasets to generate multiple queries and passages using various generation techniques 
+    like CoT, Q2D, MQR, and MCQE. It operates in three stages: first, second, and combined. The script facilitates 
+    query-passage generation for tasks such as TREC-COVID, FiQA, DBPedia-Entity, and more.
+
+    The generation process is split into:
+        - First stage: Generates multi-queries for each original query.
+        - Second stage: Generates expanded passages based on sub-queries.
+        - Combined stage: Combines query and passage generation in one step.
+
+Usage:
+    To run the script, specify the generation stage, generation type, and the task dataset:
+    
+    Example command:
+    ```bash
+    python Generate.py --generation_stage first --generation_type CoT --task trec-covid --queries_file queries.json
+    ```
+
+Dependencies:
+    - PyTorch
+    - TQDM
+    - argparse
+    - Custom modules from `utils.py` and `Generator.py` (ensure these are in the same directory or importable)
+    
+Acknowledgments:
+    - The query and passage generation methods are based on MMLF and customized generation techniques.
+    
+License:
+    MIT License. See LICENSE file for more details.
+
+"""
+
 import os
 import torch
 from tqdm import tqdm

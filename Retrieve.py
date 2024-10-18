@@ -1,3 +1,46 @@
+"""
+File: Retrieve.py
+
+Description:
+    This script processes subqueries for retrieval and passage generation using multiple retrieval models. 
+    It supports various retrieval types (single, multiple, rawQ) and can fuse query results using different methods. 
+    The script handles datasets such as TREC-COVID, FiQA, DBPedia-Entity, NFCorpus, and Webis-Touche2020.
+
+    - Single retrieval: Performs retrieval for a single query.
+    - Multiple retrieval: Combines multiple queries using fusion methods like RRF.
+    - RawQ retrieval: Uses raw queries without any augmentation.
+    
+    After retrieving the results, the script evaluates them against a ground truth (qrels) and saves the results to a specified file.
+
+Usage:
+    To run the script, specify the retrieval type, task dataset, and other arguments:
+    
+    Example command:
+    ```bash
+    python Retrieve.py --retrieval_type single --task trec-covid --queries_file queries.json --result_file results.json
+    ```
+
+Arguments:
+    --retrieval_type: Type of retrieval (single, multiple, rawQ)
+    --fusion_method: Retrieval fusion method (e.g., RRF, or None for single retrieval)
+    --include_original: Flag to include original queries in the retrieval process
+    --concat_original: Flag to concatenate original queries with expanded queries
+    --base_model: Base model for retrieval (e5-small-v2, contriever, etc.)
+    --task: Task dataset to process (e.g., trec-covid, fiqa, dbpedia-entity)
+    --queries_file: Path to the queries file
+    --result_file: Path to the result file
+
+Dependencies:
+    - PyTorch
+    - BEIR (for retrieval models)
+    - Custom modules: `utils.py` (ensure it's available in the same directory or importable)
+    - Logging for monitoring the script execution
+
+License:
+    MIT License. See LICENSE file for more details.
+
+"""
+
 import os
 import time
 import torch
