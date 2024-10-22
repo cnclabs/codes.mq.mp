@@ -14,7 +14,9 @@ MMLF (Multi-query Multi-passage Late Fusion) is a straightforward yet potent pip
   pip install -r requirements.txt
   ```
 
-### 2. Set the `OPENAI_KEY` in both `config.py` files.
+### 2. Download the Pre-generated Subqueries and Queries
+You can download the pre-generated subqueries and queries from [here]([https://huggingface.co/datasets/yvonne90190/MMLF_Generated_Results/tree/main](https://github.com/yvonne90190/MMLF/blob/main/Generated_Results.zip)).
+### 3. Set the `OPENAI_KEY` in both `config.py` files.
 
 ---
 
