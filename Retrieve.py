@@ -37,7 +37,7 @@ Dependencies:
     - Logging for monitoring the script execution
 
 License:
-    MIT License. See LICENSE file for more details.
+    Apache-2.0 License. See LICENSE file for more details.
 
 """
 
