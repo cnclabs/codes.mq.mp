@@ -29,7 +29,7 @@ Acknowledgments:
     - The query and passage generation methods are based on MMLF and customized generation techniques.
     
 License:
-    MIT License. See LICENSE file for more details.
+    Apache-2.0 License. See LICENSE file for more details.
 
 """
 
