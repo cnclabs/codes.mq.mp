@@ -24,7 +24,7 @@ Acknowledgments:
     - Reciprocal Rank Fusion is adapted from https://github.com/Raudaschl/rag-fusion.
 
 License:
-    Apache-2.0 License. See LICENSE file for details.
+    MIT License. See LICENSE file for details.
 
 """
 
