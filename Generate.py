@@ -49,7 +49,7 @@ import logging
 import argparse
 
 
-def process_dataset(task, generation_type, generation_stage, queries_file, passages_file):
+def process_dataset(task, generation_type, generation_stage, queries_file, passages_file, llm):
     try:
         # Load multi-query and passage data if they exist
         multi_queries_dict = load_multi_queries(queries_file) if os.path.exists(queries_file) else {}
@@ -57,63 +57,63 @@ def process_dataset(task, generation_type, generation_stage, queries_file, passa
 
         # Process data based on generation stage
         if generation_stage == "first":
-            process_first_stage(task, generation_type, multi_queries_dict, queries_file)
+            process_first_stage(task, generation_type, multi_queries_dict, queries_file, llm)
         elif generation_stage == "second":
-            process_second_stage(multi_queries_dict, passages_dict, generation_type, task, passages_file)
+            process_second_stage(multi_queries_dict, passages_dict, generation_type, task, passages_file, llm)
         elif generation_stage == "combined":
-            process_combined_stage(task, generation_type, multi_queries_dict, passages_dict, queries_file, passages_file)
+            process_combined_stage(task, generation_type, multi_queries_dict, passages_dict, queries_file, passages_file, llm)
 
     except Exception as e:
         logging.error(f"Error processing dataset: {e}")
 
-def process_first_stage(task, generation_type, multi_queries_dict, queries_file):
+def process_first_stage(task, generation_type, multi_queries_dict, queries_file, llm):
     """Process the dataset in the first stage of generation."""
     corpus, queries, qrels = load_data(task)
     # Generate only for queries that don't have their versions or have an error
     for key, data in tqdm(queries.items(), desc=f"Processing {task}", unit="data"):
         if key not in multi_queries_dict:
-            multi_queries_dict[key] = generate_passage(generation_type, "", data)
+            multi_queries_dict[key] = generate_passage(generation_type, "", data, llm)
             save_multi_queries(multi_queries_dict, queries_file)
 
-def process_second_stage(multi_queries_dict, passages_dict, generation_type, task, passages_file):
+def process_second_stage(multi_queries_dict, passages_dict, generation_type, task, passages_file, llm):
     """Process the dataset in the second stage of generation."""
     for key, data in tqdm(multi_queries_dict.items(), desc=f"Processing {task}", unit="data"):
         if key not in passages_dict or not passages_dict[key].get("expanded"):
             passages_dict[key] = {"original": data["original"], "expanded": []}
             for sub_query in data["expanded"]:
-                passage_result = generate_passage(generation_type, data["original"], sub_query)
+                passage_result = generate_passage(generation_type, data["original"], sub_query, llm)
                 passages_dict[key]["expanded"].append(passage_result["expanded"])
             save_multi_queries(passages_dict, passages_file)
 
-def process_combined_stage(task, generation_type, multi_queries_dict, passages_dict, queries_file, passages_file):
+def process_combined_stage(task, generation_type, multi_queries_dict, passages_dict, queries_file, passages_file, llm):
     """Process the dataset in the combined generation stage."""
     corpus, queries, qrels = load_data(task)
     for key, data in tqdm(queries.items(), desc=f"Processing {task}", unit="data"):
         if key not in multi_queries_dict or key not in passages_dict:
-            result = generate_passage(generation_type, "", data)
+            result = generate_passage(generation_type, "", data, llm)
             multi_queries_dict[key] = {"original": result["original"], "expanded": result["expanded_sub_queries"]}
             passages_dict[key] = {"original": result["original"], "expanded": result["expanded_passages"]}
         save_multi_queries(multi_queries_dict, queries_file)
         save_multi_queries(passages_dict, passages_file)
 
-def generate_passage(generation_type, original_query, query):
+def generate_passage(generation_type, original_query, query, llm):
     """Generate passage based on generation type."""
     if generation_type == "Q2D":
-        return Q2D_single_passage_generator(query)
+        return Q2D_single_passage_generator(query, llm)
     elif generation_type == "CoT":
-        return CoT_single_passage_generator(query)
+        return CoT_single_passage_generator(query, llm)
     elif generation_type == "CQE":
-        return CQE_single_passage_generator(original_query, query)
+        return CQE_single_passage_generator(original_query, query, llm)
     elif generation_type == "MQR":
-        return MQR_multi_queries_generator(query)
+        return MQR_multi_queries_generator(query, llm)
     elif generation_type == "QQD":
-        return QQD_multi_passage_generator(query)
+        return QQD_multi_passage_generator(query, llm)
     elif generation_type == "MCQE":
-        return MCQE_multi_passage_generator(query)
+        return MCQE_multi_passage_generator(query, llm)
 
 
-def main(generation_type, generation_stage, task, queries_file, passages_file):
-    process_dataset(task, generation_type, generation_stage, queries_file, passages_file)
+def main(generation_type, generation_stage, task, queries_file, passages_file, llm):
+    process_dataset(task, generation_type, generation_stage, queries_file, passages_file, llm)
 
 
 if __name__ == "__main__":
@@ -125,6 +125,7 @@ if __name__ == "__main__":
     parser.add_argument('--task', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     parser.add_argument('--queries_file', default=None, help='Path to the queries file')
     parser.add_argument('--passages_file', default=None, help='Path to the passages file (optional)')
+    parser.add_argument('--llm_model', default=None, help='llm model type')
 
     args = parser.parse_args()
-    main(args.generation_type, args.generation_stage, args.task, args.queries_file, args.passages_file)
+    main(args.generation_type, args.generation_stage, args.task, args.queries_file, args.passages_file, args.llm_model)

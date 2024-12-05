@@ -16,9 +16,9 @@ openai.api_base = "https://openrouter.ai/api/v1"
 openai.api_key = OPENAI_KEY
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def Q2D_single_passage_generator(query):
+def Q2D_single_passage_generator(query, llm):
         response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
+        model=llm,
         messages=[
             {
             "role": "user",
@@ -54,9 +54,9 @@ def Q2D_single_passage_generator(query):
         raise ValueError("Failed to generate a valid passage.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def CoT_single_passage_generator(query):
+def CoT_single_passage_generator(query, llm):
         response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
+        model=llm,
         messages=[
             {
             "role": "user",
@@ -99,9 +99,9 @@ def CoT_single_passage_generator(query):
         raise ValueError("Failed to generate a valid passage.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def CQE_single_passage_generator(original_query, sub_query):
+def CQE_single_passage_generator(original_query, sub_query, llm):
         response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
+        model=llm,
         messages=[
             {
             "role": "user",
@@ -138,9 +138,9 @@ def CQE_single_passage_generator(original_query, sub_query):
         raise ValueError("Failed to generate a valid passage.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def MQR_multi_queries_generator(query):
+def MQR_multi_queries_generator(query, llm):
     response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
+        model=llm,
         messages=[
             {
             "role": "user",
@@ -184,9 +184,9 @@ def MQR_multi_queries_generator(query):
     raise ValueError("Failed to generate 3 valid sub-queries.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def QQD_multi_passage_generator(query):
+def QQD_multi_passage_generator(query, llm):
     response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
+        model=llm,
         messages=[
             {
             "role": "user",
@@ -241,9 +241,9 @@ Passage 3:"""
     raise ValueError("Failed to generate 3 valid sub-queries and 3 passages.")
 
 @retry(stop_max_attempt_number=50, wait_fixed=2000)
-def MCQE_multi_passage_generator(query):
+def MCQE_multi_passage_generator(query, llm):
     response = openai.ChatCompletion.create(
-        model="meta-llama/llama-3-70b-instruct",
+        model=llm,
         messages=[
             {
             "role": "user",
