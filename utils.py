@@ -46,7 +46,7 @@ def load_multi_queries(filename):
         return json.load(f)
 
 def load_data(task):
-    out_dir = "/path/to/datasets"
+    out_dir = "/home/intern/Yu/MMLF/dataset"
     data_path = os.path.join(out_dir, task)
     if not os.path.exists(data_path):
         url = f"https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{task}.zip"
