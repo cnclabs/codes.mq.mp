@@ -81,13 +81,13 @@ To implement the MMLF pipeline:
 
 ```bash
 # Generate queries with the first generation stage
-python Generate.py --generation_stage first --generation_type MQR --task "$task_type" --queries_file "your_queries_file"
+python Generate.py --llm_model "$llm" --generation_stage first --generation_type MQR --task "$task_type" --queries_file "your_queries_file"
 
 # Generate queries with the second stage
-python Generate.py --generation_stage second --generation_type CQE --task "$task_type" --queries_file "your_queries_file" --passages_file "your_passages_file"
+python Generate.py --llm_model "$llm" --generation_stage second --generation_type CQE --task "$task_type" --queries_file "your_queries_file" --passages_file "your_passages_file"
 
 # Retrieve results using multiple queries and fusion method
-python Retrieve.py --retrieval_type multiple  --fusion_method RRF --include_original --base_model "$base_model" --task "$task_type" --queries_file "your_passages_file" --result_file "your_result_file"
+python Retrieve.py --base_model "$base_model" --retrieval_type multiple  --fusion_method RRF --include_original --task "$task_type" --queries_file "your_passages_file" --result_file "your_result_file"
 ```
 
 ## Acknowledgments
