@@ -15,7 +15,9 @@ MMLF (Multi-query Multi-passage Late Fusion) is a straightforward yet potent pip
   ```
 
 ### 2. Download the Pre-generated Subqueries and Queries
-You can download the pre-generated subqueries and queries from [here](https://github.com/yvonne90190/MMLF/blob/main/Generated_Results.zip).
+
+You can download the pre-generated subqueries and queries from [here](https://github.com/cnclabs/codes.mq.mp/blob/main/Generated_Results.zip).
+
 ### 3. Set the `OPENAI_KEY` in both `config.py` files.
 
 ---
@@ -29,6 +31,7 @@ This script generates queries and passages using different stages and generation
 ```bash
 python Generate.py --generation_stage={} --generation_type={} --task={} --queries_file={} --passages_file={}
 ```
+- **`llm_model`**: The name of the llm used for text generation. Candidate values: `meta-llama/llama-3-70b-instruct`, `meta-llama/Meta-Llama-3-8B-Instruct`, or other models.
 
 - **`generation_stage`**: The generation stage you want to use. Candidate values:
 
@@ -55,7 +58,8 @@ python Retrieve.py --retrieval_type={} --fusion_method={} --include_original --c
 ```
 
 - **`retrieval_type`**: The retrieval type you want to use. Candidate values:
-
+  
+  - **`base_model`**: The base model to use for query encoding. Candidate values: `e5-small-v2`, `contriever`, or other models.
   - `single`: Uses a single query for retrieval.
   - `multiple`: Uses multiple expanded queries.
   - `rawQ`: Uses raw queries without expansion.
@@ -65,7 +69,6 @@ python Retrieve.py --retrieval_type={} --fusion_method={} --include_original --c
   - `None`: For single query retrieval.
 - **`include_original`**: A flag that, if set, includes the original queries in the retrieval process.
 - **`concat_original`**: A flag that, if set, concatenates original queries with expanded queries.
-- **`base_model`**: The base model to use for query encoding. Candidate values: `e5-small-v2`, `contriever`, or other models.
 - **`task`**: The dataset you want to use. Candidate values: `trec-covid`, `fiqa`, `dbpedia-entity`, `nfcorpus`, `webis-touche2020`.
 - **`queries_file`**: The path to the queries file.
 - **`result_file`**: The path to the file where the results will be saved.

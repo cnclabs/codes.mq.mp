@@ -16,7 +16,7 @@ Usage:
     
     Example command:
     ```bash
-    python Generate.py --generation_stage first --generation_type CoT --task trec-covid --queries_file queries.json
+    python Generate.py --llm_model meta-llama/Meta-Llama-3-8B-Instruct --generation_stage first --generation_type CoT --task trec-covid --queries_file queries.json
     ```
 
 Dependencies:
@@ -120,12 +120,12 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
 
     parser = argparse.ArgumentParser(description='Process queries and passages using MMLF')
+    parser.add_argument('--llm_model', default=None, help='llm model type', required=True)
     parser.add_argument('--generation_stage', help='first, second, or combined', required=True)
     parser.add_argument('--generation_type', help='CoT, Q2D, MQR, MCQE, QQD', required=True)
     parser.add_argument('--task', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     parser.add_argument('--queries_file', default=None, help='Path to the queries file')
     parser.add_argument('--passages_file', default=None, help='Path to the passages file (optional)')
-    parser.add_argument('--llm_model', default=None, help='llm model type')
 
     args = parser.parse_args()
     main(args.generation_type, args.generation_stage, args.task, args.queries_file, args.passages_file, args.llm_model)

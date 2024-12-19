@@ -97,11 +97,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process subqueries to generate passages using MMLF')
     
     # Define arguments for both methods
+    parser.add_argument('--base_model', default='e5-small-v2', help='e5-small-v2, contriever, or other base models')
     parser.add_argument('--retrieval_type', help='single, multiple, rawQ')
     parser.add_argument('--fusion_method', default=None, help='RRF, fusion method, or None for single query retrieval')
     parser.add_argument('--include_original', action='store_true', help='Include original queries in the retrieval process')
     parser.add_argument('--concat_original', action='store_true', help='Concatenate original queries with expanded queries')
-    parser.add_argument('--base_model', default='e5-small-v2', help='e5-small-v2, contriever, or other base models')
     parser.add_argument('--task', help='trec-covid, fiqa, dbpedia-entity, nfcorpus, webis-touche2020')
     
     # New arguments for file paths
